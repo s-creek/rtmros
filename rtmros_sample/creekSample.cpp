@@ -1,13 +1,7 @@
 // -*- C++ -*-
-/*!
- * @file  creekSample.cpp * @brief creekSample * $Date$ 
- *
- * $Id$ 
- */
+
 #include "creekSample.h"
 
-// Module specification
-// <rtc-template block="module_spec">
 static const char* creeksample_spec[] =
   {
     "implementation_id", "creekSample",
@@ -27,13 +21,12 @@ static const char* creeksample_spec[] =
 // </rtc-template>
 
 creekSample::creekSample(RTC::Manager* manager)
-    // <rtc-template block="initializer">
   : RTC::DataFlowComponentBase(manager),
     m_creekSampleServicePort("creekSampleService")
-
-    // </rtc-template>
 {
+  m_service0.setComp(this);
 }
+
 
 creekSample::~creekSample()
 {
@@ -42,96 +35,70 @@ creekSample::~creekSample()
 
 RTC::ReturnCode_t creekSample::onInitialize()
 {
-  // Registration: InPort/OutPort/Service
-  // <rtc-template block="registration">
-  // Set InPort buffers
-
-  // Set OutPort buffer
-
-  // Set service provider to Ports
   m_creekSampleServicePort.registerProvider("service0", "creekSampleService", m_service0);
-
-  // Set service consumers to Ports
-
-  // Set CORBA Service Ports
   addPort(m_creekSampleServicePort);
 
-  // </rtc-template>
+  chatter_pub = nh.advertise<std_msgs::String>("chatter", 100);
+  chatter_sub = nh.subscribe("chatter/rtm", 100, &creekSample::chatterCallback, this);
 
-  // <rtc-template block="bind_config">
-  // Bind variables and configuration variable
-
-  // </rtc-template>
   return RTC::RTC_OK;
 }
 
 
-/*
-RTC::ReturnCode_t creekSample::onFinalize()
-{
-  return RTC::RTC_OK;
-}
-*/
-/*
-RTC::ReturnCode_t creekSample::onStartup(RTC::UniqueId ec_id)
-{
-  return RTC::RTC_OK;
-}
-*/
-/*
-RTC::ReturnCode_t creekSample::onShutdown(RTC::UniqueId ec_id)
-{
-  return RTC::RTC_OK;
-}
-*/
-/*
 RTC::ReturnCode_t creekSample::onActivated(RTC::UniqueId ec_id)
 {
+  std::cout << "creekSample::onActivated" << std::endl;
   return RTC::RTC_OK;
 }
-*/
-/*
+
+
 RTC::ReturnCode_t creekSample::onDeactivated(RTC::UniqueId ec_id)
 {
+  std::cout << "creekSample::onDeactivated" << std::endl;
   return RTC::RTC_OK;
 }
-*/
-/*
+
+
 RTC::ReturnCode_t creekSample::onExecute(RTC::UniqueId ec_id)
 {
+  ros::spinOnce();
+
+  coil::TimeValue tv(coil::gettimeofday());
+  std::stringstream ss;
+  ss << "from rtc (" << tv.sec() << "." << tv.usec() << ")";
+
+  std_msgs::String msg;
+  msg.data = ss.str();
+
+  chatter_pub.publish(msg);
+  //ROS_INFO("I published [%s]", ss.str().c_str());
+
+  std::cout << "creekSample::onExecute : " << tv.sec() << "." << tv.usec() << std::endl;
   return RTC::RTC_OK;
 }
-*/
-/*
-RTC::ReturnCode_t creekSample::onAborting(RTC::UniqueId ec_id)
+
+
+void creekSample::test()
 {
-  return RTC::RTC_OK;
+  coil::TimeValue tv(coil::gettimeofday());
+  std::stringstream ss;
+  ss << "from rtc service (" << tv.sec() << "." << tv.usec() << ")";
+
+  std_msgs::String msg;
+  msg.data = ss.str();
+
+  chatter_pub.publish(msg);
 }
-*/
-/*
-RTC::ReturnCode_t creekSample::onError(RTC::UniqueId ec_id)
+
+
+void creekSample::chatterCallback(const std_msgs::StringConstPtr& msg)
 {
-  return RTC::RTC_OK;
+  //ROS_INFO("Received [%s]", msg->data.c_str());
+
+  std_msgs::String send_msg;
+  send_msg.data = "from ros (" + msg->data + ")";
+  chatter_pub.publish(send_msg);
 }
-*/
-/*
-RTC::ReturnCode_t creekSample::onReset(RTC::UniqueId ec_id)
-{
-  return RTC::RTC_OK;
-}
-*/
-/*
-RTC::ReturnCode_t creekSample::onStateUpdate(RTC::UniqueId ec_id)
-{
-  return RTC::RTC_OK;
-}
-*/
-/*
-RTC::ReturnCode_t creekSample::onRateChanged(RTC::UniqueId ec_id)
-{
-  return RTC::RTC_OK;
-}
-*/
 
 
 extern "C"
