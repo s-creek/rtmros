@@ -1,0 +1,7 @@
+module OpenHRP
+{
+  interface rtmrosCnoidBridgeService
+  {
+    void test();
+  };
+};

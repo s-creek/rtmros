@@ -190,3 +190,4 @@ include_directories(
 
 
 add_subdirectory(rtmros_sample)
+add_subdirectory(cnoid_bridge)
