@@ -93,6 +93,11 @@ RTC::ReturnCode_t rtmrosCnoidBridge::onInitialize()
   m_tfsMsg.transform.rotation = tf::createQuaternionMsgFromRollPitchYaw(0,0,0);
 
 
+  image_transport::ImageTransport it(m_nh);
+  //m_imagePub = it.advertiseCamera("image_raw", 1);
+  m_imagePub = it.advertise("image_raw", 1);
+
+
   return RTC::RTC_OK;
 }
 

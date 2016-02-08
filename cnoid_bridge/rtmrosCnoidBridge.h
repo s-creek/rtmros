@@ -20,6 +20,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
+#include <image_transport/image_transport.h>
 
 using namespace RTC;
 
@@ -55,6 +56,9 @@ protected:
 
   tf::TransformBroadcaster m_tfbc;
   geometry_msgs::TransformStamped m_tfsMsg;
+
+  //image_transport::CameraPublisher m_imagePub;
+  image_transport::Publisher m_imagePub;
 
 
 private:
